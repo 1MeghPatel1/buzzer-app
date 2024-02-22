@@ -14,7 +14,7 @@ export const errorHandler = (err, req, res, next) => {
 			return res.status(400).json({
 				success: false,
 				message: err?.message || "something went wrong",
-				statusCode: 400,
+				statusCode: err.statusCode || 400,
 				errorDetails: err,
 			});
 	}

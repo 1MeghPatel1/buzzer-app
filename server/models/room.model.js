@@ -10,6 +10,11 @@ const roomSchema = mongoose.Schema(
 			unique: true,
 			required: true,
 		},
+		socketId: {
+			type: String,
+			required: true,
+			unique: true,
+		},
 		players: {
 			type: [
 				{
@@ -18,6 +23,19 @@ const roomSchema = mongoose.Schema(
 				},
 			],
 			default: [],
+		},
+		buzzedPlayers: {
+			type: [
+				{
+					type: Schema.Types.ObjectId,
+					ref: "Player",
+				},
+			],
+			default: [],
+		},
+		isBuzzersLocked: {
+			type: Boolean,
+			default: false,
 		},
 	},
 	{ timestamps: true }
