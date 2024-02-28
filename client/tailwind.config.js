@@ -1,14 +1,15 @@
 /** @type {import('tailwindcss').Config} */
-module.exports = {
+export default {
   darkMode: ["class"],
   content: [
-    './pages/**/*.{ts,tsx}',
-    './components/**/*.{ts,tsx}',
-    './app/**/*.{ts,tsx}',
-    './src/**/*.{ts,tsx}',
+    "./pages/**/*.{ts,tsx}",
+    "./components/**/*.{ts,tsx}",
+    "./app/**/*.{ts,tsx}",
+    "./src/**/*.{ts,tsx}",
   ],
   prefix: "",
   theme: {
+    fontFamily: { body: ["Nunito", "sans-serif"] },
     container: {
       center: true,
       padding: "2rem",
@@ -17,6 +18,7 @@ module.exports = {
       },
     },
     extend: {
+      fontFamily: ["Nunito", "sans-serif"],
       colors: {
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
@@ -51,6 +53,14 @@ module.exports = {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
+        "brand-primary": {
+          DEFAULT: "#ef4444",
+          foreground: "#f5f5f5",
+        },
+        "brand-secondary": {
+          DEFAULT: "#9ca3af",
+          foreground: "#FFF5E4",
+        },
       },
       borderRadius: {
         lg: "var(--radius)",
@@ -73,5 +83,5 @@ module.exports = {
       },
     },
   },
-  plugins: [require("tailwindcss-animate")],
-}
+  plugins: [import("tailwindcss-animate")],
+};

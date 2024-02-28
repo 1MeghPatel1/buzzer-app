@@ -5,6 +5,7 @@ import {
 	getRoomSchema,
 	roomEventSchema,
 } from "../utils/schemas.js";
+import throwError from "../utils/throwError.js";
 
 const roomHandlers = (io, socket) => {
 	const createRoom = async (payload, callback) => {
@@ -20,6 +21,7 @@ const roomHandlers = (io, socket) => {
 				socket.id
 			);
 			socket.join(updatedRoom.roomCode);
+			socket.data.isPlayerHost = true;
 			io.to(updatedRoom.roomCode).emit("room:updateRoomState", updatedRoom);
 			callback(null, {
 				success: true,
@@ -46,6 +48,7 @@ const roomHandlers = (io, socket) => {
 				socket.id
 			);
 			socket.join(updatedRoom.roomCode);
+			socket.data.isPlayerHost = false;
 			io.to(updatedRoom.roomCode).emit("room:updateRoomState", updatedRoom);
 		} catch (error) {
 			callback({ success: false, message: error.message, error }, null);
@@ -133,11 +136,8 @@ const roomHandlers = (io, socket) => {
 				throw new Error(error.message);
 				return;
 			}
-
-			const player = await playerServices.findBySocketId(socket.id);
-			if (!player.isHost) {
-				callback({ success: false, message: error.message, error }, null);
-				return;
+			if (!socket.data.isPlayerHost) {
+				return throwError(new Error("Player is not allowed!"));
 			}
 
 			const updatedRoom = await roomServices.resetBuzzers(
@@ -158,14 +158,11 @@ const roomHandlers = (io, socket) => {
 				throw new Error(error.message);
 				return;
 			}
-			const player = await playerServices.findBySocketId(socket.id);
-			if (!player.isHost) {
-				callback(
-					{ success: false, message: "Player is not allowed!", error: {} },
-					null
-				);
-				return;
+
+			if (!socket.data.isPlayerHost) {
+				return throwError(new Error("Player is not allowed!"));
 			}
+
 			const updatedRoom = await roomServices.lockBuzzers(
 				validatedPayload.roomCode
 			);
@@ -184,14 +181,11 @@ const roomHandlers = (io, socket) => {
 				throw new Error(error.message);
 				return;
 			}
-			const player = await playerServices.findBySocketId(socket.id);
-			if (!player.isHost) {
-				callback(
-					{ success: false, message: "Player is not allowed!", error: {} },
-					null
-				);
-				return;
+
+			if (!socket.data.isPlayerHost) {
+				return throwError(new Error("Player is not allowed!"));
 			}
+
 			const updatedRoom = await roomServices.unlockBuzzers(
 				validatedPayload.roomCode
 			);

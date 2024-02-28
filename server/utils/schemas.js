@@ -15,6 +15,7 @@ const getRoomSchema = Joi.object({
 
 const scoreSchema = Joi.object({
 	score: Joi.number().required(),
+	socketId: Joi.string().required(),
 });
 
 export { roomEventSchema, createRoomSchema, getRoomSchema, scoreSchema };

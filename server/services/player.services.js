@@ -2,6 +2,7 @@ import e from "express";
 import Player from "../models/player.model.js";
 import AppError from "../utils/AppError.js";
 import throwError from "../utils/throwError.js";
+import * as roomServices from "./room.services.js";
 
 const create = async (
 	playerName,
@@ -68,7 +69,9 @@ const increaseScore = async (socketId, score) => {
 			throw new AppError("Player not found", 404);
 		}
 
-		return player;
+		const updatedRoom = await roomServices.find(player.roomCode);
+
+		return updatedRoom;
 	} catch (error) {
 		throwError(error);
 	}
@@ -84,7 +87,9 @@ const setScore = async (socketId, score) => {
 			throw new AppError("Player not found", 404);
 		}
 
-		return player;
+		const updatedRoom = await roomServices.find(player.roomCode);
+
+		return updatedRoom;
 	} catch (error) {
 		throwError(error);
 	}

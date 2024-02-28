@@ -6,7 +6,7 @@ export const socketioConfig = {
 	getIo: (server) => {
 		const io = new Server(server, {
 			cors: {
-				origin: ["http://localhost:3000"],
+				origin: [process.env.LOCAL_CLIENT],
 				methods: ["GET", "POST", "PUT"],
 			},
 		});

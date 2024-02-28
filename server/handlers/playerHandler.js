@@ -1,25 +1,28 @@
 import * as playerServices from "../services/player.services.js";
 import * as roomServices from "../services/room.services.js";
 import { scoreSchema } from "../utils/schemas.js";
+import throwError from "../utils/throwError.js";
 
 const playerHandlers = (io, socket) => {
 	const increaseScore = async (payload, callback) => {
 		try {
 			const { error, value: validatedPayload } = scoreSchema.validate(payload);
 			if (error) {
-				throw new Error(error.message);
-				return;
+				return throwError(error);
 			}
 
-			const player = await playerServices.increaseScore(
-				socket.id,
+			if (!socket.data.isPlayerHost) {
+				return throwError(new Error("Player is not allowed"));
+			}
+
+			const updatedRoom = await playerServices.increaseScore(
+				validatedPayload.socketId,
 				validatedPayload.score
 			);
 
-			const updatedRoom = await roomServices.find(player.roomCode);
 			io.to(updatedRoom.roomCode).emit("room:updateRoomState", updatedRoom);
-		} catch (err) {
-			callback({ success: false, message: err.message, error: err }, null);
+		} catch (error) {
+			callback({ success: false, message: error.message, error: error }, null);
 			return;
 		}
 	};
@@ -28,19 +31,21 @@ const playerHandlers = (io, socket) => {
 		try {
 			const { error, value: validatedPayload } = scoreSchema.validate(payload);
 			if (error) {
-				throw new Error(error.message);
-				return;
+				return throwError(error);
 			}
 
-			const player = await playerServices.setScore(
-				socket.id,
+			if (!socket.data.isPlayerHost) {
+				return throwError(new Error("Player is not allowed"));
+			}
+
+			const updatedRoom = await playerServices.setScore(
+				validatedPayload.socketId,
 				validatedPayload.score
 			);
 
-			const updatedRoom = await roomServices.find(player.roomCode);
 			io.to(updatedRoom.roomCode).emit("room:updateRoomState", updatedRoom);
 		} catch (error) {
-			callback({ success: false, message: err.message, error: err }, null);
+			callback({ success: false, message: error.message, error }, null);
 			return;
 		}
 	};
