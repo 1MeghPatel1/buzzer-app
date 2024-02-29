@@ -3,7 +3,7 @@ import { Separator } from "../ui/separator";
 const Intro = () => {
   return (
     <div className="flex w-[40%] flex-col gap-8">
-      <h2 className="text-4xl font-semibold tracking-wide">
+      <h2 className="text-4xl font-semibold tracking-wide text-[#e11d48] dark:text-primary-foreground">
         BuzzIn! <span className=" text-base italic">Elevating Engagement.</span>
       </h2>
       <Separator />

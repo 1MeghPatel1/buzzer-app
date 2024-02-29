@@ -3,6 +3,7 @@ import Player from "../models/player.model.js";
 import AppError from "../utils/AppError.js";
 import throwError from "../utils/throwError.js";
 import * as roomServices from "./room.services.js";
+import { generateAvatar } from "../utils/helper.js";
 
 const create = async (
 	playerName,
@@ -12,6 +13,7 @@ const create = async (
 	isHost = false
 ) => {
 	try {
+		const avatar = generateAvatar();
 		const player = await Player.findOneAndUpdate(
 			{ socketId: socketId },
 			{
@@ -20,6 +22,7 @@ const create = async (
 				roomCode,
 				socketId,
 				isHost,
+				avatar,
 			},
 			{
 				upsert: true,
