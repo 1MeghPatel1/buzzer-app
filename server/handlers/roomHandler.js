@@ -3,6 +3,7 @@ import * as playerServices from "../services/player.services.js";
 import {
 	createRoomSchema,
 	getRoomSchema,
+	removePlayerSchema,
 	roomEventSchema,
 } from "../utils/schemas.js";
 import throwError from "../utils/throwError.js";
@@ -13,8 +14,7 @@ const roomHandlers = (io, socket) => {
 			const { error, value: validatedPayload } =
 				createRoomSchema.validate(payload);
 			if (error) {
-				throw new Error(error.message);
-				return;
+				return throwError(new Error(error.message));
 			}
 			const updatedRoom = await roomServices.create(
 				validatedPayload.roomName,
@@ -39,8 +39,7 @@ const roomHandlers = (io, socket) => {
 			const { error, value: validatedPayload } =
 				roomEventSchema.validate(payload);
 			if (error) {
-				throw new Error(error.message);
-				return;
+				return throwError(new Error(error.message));
 			}
 			const updatedRoom = await roomServices.findAndJoin(
 				validatedPayload.roomCode,
@@ -50,6 +49,11 @@ const roomHandlers = (io, socket) => {
 			socket.join(updatedRoom.roomCode);
 			socket.data.isPlayerHost = false;
 			io.to(updatedRoom.roomCode).emit("room:updateRoomState", updatedRoom);
+			callback(null, {
+				success: true,
+				message: "Joined room successfully!",
+				room: updatedRoom,
+			});
 		} catch (error) {
 			callback({ success: false, message: error.message, error }, null);
 			return;
@@ -61,11 +65,15 @@ const roomHandlers = (io, socket) => {
 			const { error, value: validatedPayload } =
 				getRoomSchema.validate(payload);
 			if (error) {
-				throw new Error(error.message);
-				return;
+				return throwError(new Error(error.message));
 			}
 			const room = await roomServices.find(validatedPayload.roomCode);
 			io.to(socket.id).emit("room:receiveRoomDetails", room);
+			callback(null, {
+				success: true,
+				message: "Get room successfully!",
+				room: updatedRoom,
+			});
 		} catch (error) {
 			callback({ success: false, message: error.message, error }, null);
 			return;
@@ -77,8 +85,7 @@ const roomHandlers = (io, socket) => {
 			const { error, value: validatedPayload } =
 				roomEventSchema.validate(payload);
 			if (error) {
-				throw new Error(error.message);
-				return;
+				return throwError(new Error(error.message));
 			}
 
 			const room = await roomServices.find(validatedPayload.roomCode);
@@ -95,6 +102,11 @@ const roomHandlers = (io, socket) => {
 				"room:updateRoomState",
 				updatedRoom
 			);
+			callback(null, {
+				success: true,
+				message: "Buzzed successfully!",
+				room: updatedRoom,
+			});
 		} catch (error) {
 			callback({ success: false, message: error.message, error }, null);
 			return;
@@ -128,13 +140,56 @@ const roomHandlers = (io, socket) => {
 		}
 	};
 
+	const removePlayer = async (payload, callback) => {
+		try {
+			const { error, value: validatedPayload } =
+				removePlayerSchema.validate(payload);
+			if (error) {
+				return throwError(new Error(error.message));
+			}
+			const updatedRoom = await roomServices.removePlayerBySocketId(
+				validatedPayload.socketId
+			);
+			io.to(updatedRoom.roomCode).emit("room:updateRoomState", updatedRoom);
+			callback(null, {
+				success: true,
+				message: "Removed player successfully!",
+				room: updatedRoom,
+			});
+		} catch (error) {
+			callback({ success: false, message: error.message, error }, null);
+			return;
+		}
+	};
+
+	const removeBuzzedPlayer = async (payload, callback) => {
+		try {
+			const { error, value: validatedPayload } =
+				removePlayerSchema.validate(payload);
+			if (error) {
+				return throwError(new Error(error.message));
+			}
+			const updatedRoom = await roomServices.removeBuzzedPlayer(
+				validatedPayload.socketId
+			);
+			io.to(updatedRoom.roomCode).emit("room:updateRoomState", updatedRoom);
+			callback(null, {
+				success: true,
+				message: "Removed buzzed player successfully!",
+				room: updatedRoom,
+			});
+		} catch (error) {
+			callback({ success: false, message: error.message, error }, null);
+			return;
+		}
+	};
+
 	const resetBuzzers = async (payload, callback) => {
 		try {
 			const { error, value: validatedPayload } =
 				getRoomSchema.validate(payload);
 			if (error) {
-				throw new Error(error.message);
-				return;
+				return throwError(new Error(error.message));
 			}
 			if (!socket.data.isPlayerHost) {
 				return throwError(new Error("Player is not allowed!"));
@@ -144,6 +199,11 @@ const roomHandlers = (io, socket) => {
 				validatedPayload.roomCode
 			);
 			io.to(updatedRoom.roomCode).emit("room:updateRoomState", updatedRoom);
+			callback(null, {
+				success: true,
+				message: "Reset buzzers successfully!",
+				room: updatedRoom,
+			});
 		} catch (error) {
 			callback({ success: false, message: error.message, error }, null);
 			return;
@@ -155,8 +215,7 @@ const roomHandlers = (io, socket) => {
 			const { error, value: validatedPayload } =
 				getRoomSchema.validate(payload);
 			if (error) {
-				throw new Error(error.message);
-				return;
+				return throwError(new Error(error.message));
 			}
 
 			if (!socket.data.isPlayerHost) {
@@ -167,6 +226,11 @@ const roomHandlers = (io, socket) => {
 				validatedPayload.roomCode
 			);
 			io.to(updatedRoom.roomCode).emit("room:updateRoomState", updatedRoom);
+			callback(null, {
+				success: true,
+				message: "Locked buzzers successfully!",
+				room: updatedRoom,
+			});
 		} catch (error) {
 			callback({ success: false, message: error.message, error }, null);
 			return;
@@ -178,8 +242,7 @@ const roomHandlers = (io, socket) => {
 			const { error, value: validatedPayload } =
 				getRoomSchema.validate(payload);
 			if (error) {
-				throw new Error(error.message);
-				return;
+				return throwError(new Error(error.message));
 			}
 
 			if (!socket.data.isPlayerHost) {
@@ -190,6 +253,11 @@ const roomHandlers = (io, socket) => {
 				validatedPayload.roomCode
 			);
 			io.to(updatedRoom.roomCode).emit("room:updateRoomState", updatedRoom);
+			callback(null, {
+				success: true,
+				message: "Unlocked buzzers successfully!",
+				room: updatedRoom,
+			});
 		} catch (error) {
 			callback({ success: false, message: error.message, error }, null);
 			return;
@@ -204,6 +272,8 @@ const roomHandlers = (io, socket) => {
 	socket.on("room:resetBuzzers", resetBuzzers);
 	socket.on("room:lockBuzzers", lockBuzzers);
 	socket.on("room:unlockBuzzers", unlockBuzzers);
+	socket.on("room:removePlayer", removePlayer);
+	socket.on("room:removeBuzzedPlayer", removeBuzzedPlayer);
 };
 
 export default roomHandlers;

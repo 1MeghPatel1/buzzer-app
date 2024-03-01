@@ -12,8 +12,13 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { useNavigate } from "react-router-dom";
+import { appSocket } from "@/socket/socket";
+import { socketResponse } from "@/utils/types";
 
 const JoinRoom = () => {
+  const navigate = useNavigate();
+
   const form = useForm<z.infer<typeof joinRoomSchema>>({
     resolver: zodResolver(joinRoomSchema),
     defaultValues: {
@@ -23,9 +28,26 @@ const JoinRoom = () => {
   });
 
   const onSubmit = (values: z.infer<typeof joinRoomSchema>) => {
-    // Do something with the form values.
-    // ✅ This will be type-safe and validated.
-    console.log(values);
+    try {
+      appSocket
+        .timeout(5000)
+        .emit(
+          "room:join",
+          values,
+          (error: socketResponse, res: socketResponse) => {
+            if (error) {
+              console.log(error);
+            }
+            form.reset();
+            navigate("/room");
+            return res;
+          },
+        );
+      // Navigate to the room page.
+    } catch (error) {
+      console.log(error);
+      return error; // Return the error from the server.
+    }
   };
 
   return (

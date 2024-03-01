@@ -2,7 +2,7 @@ import { NotebookPen, Projector } from "lucide-react";
 import { Separator } from "../ui/separator";
 const Intro = () => {
   return (
-    <div className="flex w-[40%] flex-col gap-8">
+    <div className="flex w-[80%] flex-col gap-8 sm:w-[40%]">
       <h2 className="text-4xl font-semibold tracking-wide text-[#e11d48] dark:text-primary-foreground">
         BuzzIn! <span className=" text-base italic">Elevating Engagement.</span>
       </h2>

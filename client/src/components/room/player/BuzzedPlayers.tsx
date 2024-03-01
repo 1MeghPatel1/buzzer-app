@@ -1,7 +1,9 @@
 import { ScrollArea } from "@/components/ui/scroll-area";
 import BuzzedPlayer from "./BuzzedPlayer";
+import useStore from "@/store/store";
 
 const BuzzedPlayers = () => {
+  const roomState = useStore((state) => state.roomState);
   return (
     <div className="flex min-h-[30rem] flex-col gap-4 rounded-md border border-gray-100  bg-rose-300 bg-opacity-30 bg-clip-padding px-10 py-6 shadow-2xl backdrop-blur-sm backdrop-filter sm:row-span-3">
       <div className="flex items-center justify-between">
@@ -12,12 +14,9 @@ const BuzzedPlayers = () => {
       </div>
       <ScrollArea className="mt-2 h-[21rem]">
         <div className="flex flex-col gap-4 px-4">
-          <BuzzedPlayer />
-          <BuzzedPlayer />
-          <BuzzedPlayer />
-          <BuzzedPlayer />
-          <BuzzedPlayer />
-          <BuzzedPlayer />
+          {roomState.buzzedPlayers.map((player) => (
+            <BuzzedPlayer key={player.socketId} player={player} />
+          ))}
         </div>
       </ScrollArea>
     </div>

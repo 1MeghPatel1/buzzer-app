@@ -9,6 +9,10 @@ const createRoomSchema = Joi.object({
 	roomName: Joi.string().min(3).max(50).required(),
 });
 
+const removePlayerSchema = Joi.object({
+	socketId: Joi.string().required(),
+});
+
 const getRoomSchema = Joi.object({
 	roomCode: Joi.string().min(3).max(50).required(),
 });
@@ -18,4 +22,10 @@ const scoreSchema = Joi.object({
 	socketId: Joi.string().required(),
 });
 
-export { roomEventSchema, createRoomSchema, getRoomSchema, scoreSchema };
+export {
+	roomEventSchema,
+	createRoomSchema,
+	getRoomSchema,
+	scoreSchema,
+	removePlayerSchema,
+};

@@ -1,3 +1,5 @@
+import { configDotenv } from "dotenv";
+configDotenv();
 import { Server } from "socket.io";
 import roomHandlers from "../handlers/roomHandler.js";
 import playerHandlers from "../handlers/playerHandler.js";

@@ -80,6 +80,25 @@ const increaseScore = async (socketId, score) => {
 	}
 };
 
+const decreaseScore = async (socketId, score) => {
+	try {
+		score = score * -1;
+		const player = await Player.findOneAndUpdate(
+			{ socketId: socketId },
+			{ $inc: { score } }
+		);
+		if (!player) {
+			throw new AppError("Player not found", 404);
+		}
+
+		const updatedRoom = await roomServices.find(player.roomCode);
+
+		return updatedRoom;
+	} catch (error) {
+		throwError(error);
+	}
+};
+
 const setScore = async (socketId, score) => {
 	try {
 		const player = await Player.findOneAndUpdate(
@@ -145,4 +164,5 @@ export {
 	setScore,
 	removeBySocketId,
 	findBySocketId,
+	decreaseScore,
 };

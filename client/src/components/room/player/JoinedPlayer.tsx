@@ -1,18 +1,16 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Player } from "@/store/store";
 
-const JoinedPlayer = () => {
+const JoinedPlayer = ({ player }: { player: Player }) => {
   return (
     <div className="flex items-center justify-between rounded-3xl bg-brand-primary-foreground p-3 dark:bg-teal-700">
       <div className="flex items-center justify-start gap-4">
         <Avatar>
-          <AvatarImage
-            src="https://api.dicebear.com/7.x/fun-emoji/svg?seed=Bandit&radius=50&backgroundColor=b6e3f4"
-            alt="Avatar"
-          />
-          <AvatarFallback>Initials</AvatarFallback>
+          <AvatarImage src={player.avatar} alt="Avatar" />
+          <AvatarFallback>{player.name.substring(0, 2)}</AvatarFallback>
         </Avatar>
 
-        <h3 className="text-lg font-semibold">John Doe</h3>
+        <h3 className="text-lg font-semibold">{player.name}</h3>
       </div>
     </div>
   );

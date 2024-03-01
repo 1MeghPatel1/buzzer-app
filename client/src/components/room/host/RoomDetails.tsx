@@ -1,5 +1,12 @@
 import { Button } from "@/components/ui/button";
-import { LogOut, Volume2, VolumeX } from "lucide-react";
+import {
+  Lock,
+  LogOut,
+  RefreshCcwDot,
+  Unlock,
+  Volume2,
+  VolumeX,
+} from "lucide-react";
 import {
   Tooltip,
   TooltipContent,
@@ -7,10 +14,66 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { useState } from "react";
+import useStore from "@/store/store";
+import { appSocket } from "@/socket/socket";
+import { socketResponse } from "@/utils/types";
 const RoomDetails = () => {
   const [isSoundOn, setIsSoundOn] = useState(true);
+  const [isBuzzersLocked, setIsBuzzersLocked] = useState(false);
+  const roomState = useStore((state) => state.roomState);
+
   const handleSoundClick = () => {
     setIsSoundOn(!isSoundOn);
+  };
+
+  const handleResetClick = () => {
+    appSocket
+      .timeout(5000)
+      .emit(
+        "room:resetBuzzers",
+        { roomCode: roomState.roomCode },
+        (error: socketResponse, res: socketResponse) => {
+          if (error) {
+            console.error(error);
+          }
+          return res;
+        },
+      );
+  };
+
+  const handleLockClick = () => {
+    try {
+      setIsBuzzersLocked(!isBuzzersLocked);
+      if (isBuzzersLocked) {
+        appSocket
+          .timeout(5000)
+          .emit(
+            "room:unlockBuzzers",
+            { roomCode: roomState.roomCode },
+            (error: socketResponse, res: socketResponse) => {
+              if (error) {
+                console.error(error);
+              }
+              return res;
+            },
+          );
+      } else {
+        appSocket
+          .timeout(5000)
+          .emit(
+            "room:lockBuzzers",
+            { roomCode: roomState.roomCode },
+            (error: socketResponse, res: socketResponse) => {
+              if (error) {
+                console.error(error);
+              }
+              return res;
+            },
+          );
+      }
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   return (
@@ -20,13 +83,13 @@ const RoomDetails = () => {
           <h2 className="text-2xl font-medium text-slate-700 dark:text-slate-100">
             Room Name
           </h2>
-          <h3 className=" text-xl font-bold">Albiorix Buzzer Room</h3>
+          <h3 className=" text-lg font-bold">{roomState.roomName}</h3>
         </div>
         <div className="w-[15rem]">
           <h2 className="text-2xl font-medium text-slate-700 dark:text-slate-100">
             Room Code
           </h2>
-          <h3 className=" text-xl font-bold">785sadfg55</h3>
+          <h3 className=" text-lg font-bold">{roomState.roomCode}</h3>
         </div>
         <div className="flex w-[15rem] items-center gap-4">
           <Button
@@ -37,6 +100,38 @@ const RoomDetails = () => {
           >
             {isSoundOn ? <VolumeX /> : <Volume2 />}
           </Button>
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  className="rounded-full"
+                  variant="secondary"
+                  size="icon"
+                  onClick={handleResetClick}
+                >
+                  <RefreshCcwDot />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>Reset all Buzzers!</TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  className="rounded-full"
+                  variant="secondary"
+                  size="icon"
+                  onClick={handleLockClick}
+                >
+                  {isBuzzersLocked ? <Lock /> : <Unlock />}
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                {isBuzzersLocked ? "Unlock Buzzers" : "Lock Buzzers"}
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild>

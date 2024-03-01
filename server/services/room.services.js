@@ -119,6 +119,21 @@ const removePlayerBySocketId = async (socketId) => {
 	}
 };
 
+const removeBuzzedPlayer = async (socketId) => {
+	try {
+		const player = await playerServices.findBySocketId(socketId);
+		const room = await Room.updateOne(
+			{ _id: player.roomJoined },
+			{ $pull: { buzzedPlayers: player._id } }
+		);
+		return Room.findOne({ roomCode })
+			.populate("players")
+			.populate("buzzedPlayers");
+	} catch (error) {
+		throwError(error);
+	}
+};
+
 const addBuzzedPlayer = async (roomCode, playerName) => {
 	try {
 		const room = await Room.findOne({ roomCode });
@@ -202,4 +217,5 @@ export {
 	resetBuzzers,
 	lockBuzzers,
 	unlockBuzzers,
+	removeBuzzedPlayer,
 };

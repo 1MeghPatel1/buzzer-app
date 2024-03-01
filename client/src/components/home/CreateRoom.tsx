@@ -12,8 +12,13 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { appSocket } from "@/socket/socket";
+import { socketResponse } from "@/utils/types";
+import { useNavigate } from "react-router-dom";
 
 const CreateRoom = () => {
+  const navigate = useNavigate();
+
   const form = useForm<z.infer<typeof createRoomSchema>>({
     resolver: zodResolver(createRoomSchema),
     defaultValues: {
@@ -22,9 +27,25 @@ const CreateRoom = () => {
   });
 
   const onSubmit = (values: z.infer<typeof createRoomSchema>) => {
-    // Do something with the form values.
-    // ✅ This will be type-safe and validated.
-    console.log(values);
+    try {
+      appSocket
+        .timeout(5000)
+        .emit(
+          "room:create",
+          values,
+          (error: socketResponse, res: socketResponse) => {
+            if (error) {
+              console.log(error);
+            }
+            form.reset();
+            navigate("/room"); // Navigate to the room page.
+            return res; // Return the response from the server.
+          },
+        );
+    } catch (error) {
+      console.log(error);
+      return error; // Return the error from the server.
+    }
   };
 
   return (

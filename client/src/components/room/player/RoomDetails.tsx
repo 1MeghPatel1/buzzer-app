@@ -5,11 +5,12 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import useStore from "@/store/store";
 import { LogOut, Volume2, VolumeX } from "lucide-react";
 import { useState } from "react";
-
 const RoomDetails = () => {
   const [isSoundOn, setIsSoundOn] = useState(true);
+  const roomState = useStore((state) => state.roomState);
   const handleSoundClick = () => {
     setIsSoundOn(!isSoundOn);
   };
@@ -21,13 +22,13 @@ const RoomDetails = () => {
           <h2 className="text-2xl font-medium text-slate-700 dark:text-slate-100">
             Room Name
           </h2>
-          <h3 className=" text-xl font-bold">Albiorix Buzzer Room</h3>
+          <h3 className=" text-lg font-bold">{roomState.roomName}</h3>
         </div>
         <div className="w-[19rem]">
           <h2 className="text-2xl font-medium text-slate-700 dark:text-slate-100">
             Room Code
           </h2>
-          <h3 className=" text-xl font-bold">785sadfg55</h3>
+          <h3 className=" text-lg font-bold">{roomState.roomCode}</h3>
         </div>
         <div className="flex w-[19rem] items-center gap-4">
           <Button

@@ -4,6 +4,8 @@ import Room from "./components/room/Room";
 import { ThemeProvider } from "./components/ui/theme-provider";
 import Player from "./components/room/player/Player";
 import Host from "./components/room/host/Host";
+import Events from "./socket/Events";
+import { Toaster } from "./components/ui/toaster";
 
 const router = createBrowserRouter([
   {
@@ -30,7 +32,10 @@ const router = createBrowserRouter([
 const App = () => {
   return (
     <ThemeProvider defaultTheme="light" storageKey="vite-ui-theme">
-      <RouterProvider router={router} />
+      <Events>
+        <RouterProvider router={router} />
+        <Toaster />
+      </Events>
     </ThemeProvider>
   );
 };
