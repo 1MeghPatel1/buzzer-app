@@ -22,8 +22,10 @@ export interface RoomState {
 export interface StoreState {
   roomState: RoomState;
   playerInfo: Player;
+  soundOn: boolean;
   updatePlayerInfo: (updatedPlayerInfo: Player) => void;
   updateRoomState: (updatedRoomState: RoomState) => void;
+  toggleSoundOn: (soundOn: boolean) => void;
 }
 
 const useStore = create<StoreState>((set) => ({
@@ -44,11 +46,14 @@ const useStore = create<StoreState>((set) => ({
     score: 0,
     roomJoined: "",
   },
+  soundOn: false,
   updatePlayerInfo: (updatedPlayerInfo: Player) =>
     set({ playerInfo: updatedPlayerInfo }),
 
   updateRoomState: (updatedRoomState: RoomState) =>
     set({ roomState: updatedRoomState }),
+
+  toggleSoundOn: (soundOn: boolean) => set({ soundOn: !soundOn }),
 }));
 
 export default useStore;

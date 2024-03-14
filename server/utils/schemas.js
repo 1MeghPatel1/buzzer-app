@@ -1,12 +1,12 @@
 import Joi from "joi";
 
 const roomEventSchema = Joi.object({
-	playerName: Joi.string().min(3).max(50).required(),
-	roomCode: Joi.string().min(3).max(50).required(),
+	playerName: Joi.string().min(2).max(50).required(),
+	roomCode: Joi.string().min(2).max(50).required(),
 });
 
 const createRoomSchema = Joi.object({
-	roomName: Joi.string().min(3).max(50).required(),
+	roomName: Joi.string().min(2).max(50).required(),
 });
 
 const removePlayerSchema = Joi.object({
@@ -14,7 +14,7 @@ const removePlayerSchema = Joi.object({
 });
 
 const getRoomSchema = Joi.object({
-	roomCode: Joi.string().min(3).max(50).required(),
+	roomCode: Joi.string().min(5).max(50).required(),
 });
 
 const scoreSchema = Joi.object({

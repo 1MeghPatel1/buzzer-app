@@ -16,6 +16,10 @@ const roomHandlers = (io, socket) => {
 			if (error) {
 				return throwError(new Error(error.message));
 			}
+			const player = await playerServices.findOne(validatedPayload.roomName);
+			if (player) {
+				throwError(new Error("Room name already exists"));
+			}
 			const updatedRoom = await roomServices.create(
 				validatedPayload.roomName,
 				socket.id
@@ -40,6 +44,10 @@ const roomHandlers = (io, socket) => {
 				roomEventSchema.validate(payload);
 			if (error) {
 				return throwError(new Error(error.message));
+			}
+			const player = await playerServices.findOne(validatedPayload.playerName);
+			if (player) {
+				throwError(new Error("Player name already exists"));
 			}
 			const updatedRoom = await roomServices.findAndJoin(
 				validatedPayload.roomCode,
@@ -88,6 +96,8 @@ const roomHandlers = (io, socket) => {
 				return throwError(new Error(error.message));
 			}
 
+			io.to(validatedPayload.roomCode).emit("room:playerBuzzed");
+
 			const room = await roomServices.find(validatedPayload.roomCode);
 			if (room.isBuzzersLocked) {
 				throw new Error("Host has locked all the buzzers");
@@ -120,7 +130,7 @@ const roomHandlers = (io, socket) => {
 				const removedRoom = await roomServices.removeByRoomCode(
 					player.roomJoined.roomCode
 				);
-				io.to(removedRoom.roomCode).emit("roomRemoved", {
+				io.to(player.roomCode).emit("roomRemoved", {
 					success: true,
 					message: "Room removed successfully!",
 					room: removedRoom,

@@ -4,10 +4,12 @@ import { appSocket } from "@/socket/socket";
 import useStore from "@/store/store";
 import { socketResponse } from "@/utils/types";
 import { useEffect, useState } from "react";
+import buzzerSound from "/sounds/Buzz.mp3";
 
 const BuzzerBox = () => {
   const roomState = useStore((state) => state.roomState);
   const playerInfo = useStore((state) => state.playerInfo);
+  const soundOn = useStore((state) => state.soundOn);
   const { toast } = useToast();
   const [isBuzzed, setIsBuzzed] = useState(false);
 
@@ -21,13 +23,21 @@ const BuzzerBox = () => {
 
   const handleBuzz = () => {
     try {
+      if (isBuzzed) {
+        return;
+      }
       if (roomState.isBuzzersLocked) {
         return toast({
           title: "Buzzers are locked by Host",
           description: "Please wait untill buzzers are unlocked",
+          variant: "destructive",
         });
       }
       setIsBuzzed(true);
+      if (soundOn) {
+        const audio = new Audio(buzzerSound);
+        audio.play();
+      }
       const payload = {
         roomCode: playerInfo.roomCode,
         playerName: playerInfo.name,
@@ -37,15 +47,23 @@ const BuzzerBox = () => {
         .emit(
           "room:buzz",
           payload,
-          (error: socketResponse, res: socketResponse) => {
+          (_: null, error: socketResponse, res: socketResponse) => {
             if (error) {
-              console.log(error);
+              toast({
+                title: "Error: Something went wrong!",
+                description: error.message,
+                variant: "destructive",
+              });
             }
             return res;
           },
         );
     } catch (error) {
-      console.log(error);
+      if (error instanceof Error)
+        toast({
+          title: "Error: Something went wrong!",
+          description: error.message,
+        });
     }
   };
   return (

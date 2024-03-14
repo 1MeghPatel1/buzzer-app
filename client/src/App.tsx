@@ -10,11 +10,19 @@ import { Toaster } from "./components/ui/toaster";
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <Home />,
+    element: (
+      <Events>
+        <Home />
+      </Events>
+    ),
   },
   {
     path: "/room",
-    element: <Room />,
+    element: (
+      <Events>
+        <Room />
+      </Events>
+    ),
     children: [
       {
         index: true,
@@ -32,10 +40,8 @@ const router = createBrowserRouter([
 const App = () => {
   return (
     <ThemeProvider defaultTheme="light" storageKey="vite-ui-theme">
-      <Events>
-        <RouterProvider router={router} />
-        <Toaster />
-      </Events>
+      <RouterProvider router={router} />
+      <Toaster />
     </ThemeProvider>
   );
 };

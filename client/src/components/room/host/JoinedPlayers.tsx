@@ -9,11 +9,14 @@ const JoinedPlayers = () => {
       <div className="flex items-center justify-between">
         <h1 className="text-xl font-semibold">Joined Players</h1>
         <h3 className="text-lg font-semibold">
-          Total Players - <span className="text-lg font-semibold">3</span>
+          Total Players -{" "}
+          <span className="text-lg font-semibold">
+            {roomState.players.length}
+          </span>
         </h3>
       </div>
       <ScrollArea className="mt-2 h-[21rem]">
-        <div className="flex flex-col gap-4 px-4">
+        <div className="mt-2 flex flex-col gap-4 sm:px-4">
           {roomState.players.map(
             (player) =>
               player.socketId !== roomState.socketId && (

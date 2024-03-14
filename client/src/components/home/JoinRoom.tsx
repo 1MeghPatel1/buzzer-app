@@ -15,9 +15,14 @@ import { Input } from "@/components/ui/input";
 import { useNavigate } from "react-router-dom";
 import { appSocket } from "@/socket/socket";
 import { socketResponse } from "@/utils/types";
+import { useToast } from "../ui/use-toast";
+import { Loader2 } from "lucide-react";
+import { useState } from "react";
 
 const JoinRoom = () => {
   const navigate = useNavigate();
+  const [isLoading, setIsLoading] = useState(false);
+  const { toast } = useToast();
 
   const form = useForm<z.infer<typeof joinRoomSchema>>({
     resolver: zodResolver(joinRoomSchema),
@@ -29,29 +34,40 @@ const JoinRoom = () => {
 
   const onSubmit = (values: z.infer<typeof joinRoomSchema>) => {
     try {
+      setIsLoading(true);
       appSocket
         .timeout(5000)
         .emit(
           "room:join",
           values,
-          (error: socketResponse, res: socketResponse) => {
+          (_: null, error: socketResponse, res: socketResponse) => {
             if (error) {
-              console.log(error);
+              toast({
+                title: "Error: Something went wrong!",
+                description: error.message,
+                variant: "destructive",
+              });
             }
             form.reset();
+            setIsLoading(false);
             navigate("/room");
             return res;
           },
         );
       // Navigate to the room page.
     } catch (error) {
-      console.log(error);
+      if (error instanceof Error)
+        toast({
+          title: "Error: Something went wrong!",
+          description: error.message,
+          variant: "destructive",
+        });
       return error; // Return the error from the server.
     }
   };
 
   return (
-    <div className="flex min-h-[22rem] min-w-[24rem] flex-col gap-4 rounded-md border  border-gray-100 bg-purple-100 bg-opacity-30 bg-clip-padding px-10 py-6 shadow-2xl backdrop-blur-sm backdrop-filter">
+    <div className="flex min-h-[22rem] min-w-[24rem] flex-col gap-4 rounded-md border  border-gray-100 bg-purple-100 bg-opacity-40 bg-clip-padding px-10 py-6 shadow-2xl backdrop-blur-sm backdrop-filter">
       <h2 className="font-medium italic tracking-wide">
         Want to join an existing Room?
       </h2>
@@ -91,7 +107,14 @@ const JoinRoom = () => {
             )}
           />
           <Button className="uppercase" type="submit">
-            Join Room
+            {!isLoading ? (
+              "Join Room"
+            ) : (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Please wait
+              </>
+            )}
           </Button>
         </form>
       </Form>

@@ -126,7 +126,7 @@ const removeBuzzedPlayer = async (socketId) => {
 			{ _id: player.roomJoined },
 			{ $pull: { buzzedPlayers: player._id } }
 		);
-		return Room.findOne({ roomCode })
+		return Room.findById(player.roomJoined)
 			.populate("players")
 			.populate("buzzedPlayers");
 	} catch (error) {

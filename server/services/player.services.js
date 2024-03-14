@@ -39,10 +39,6 @@ const create = async (
 const findOne = async (playerName) => {
 	try {
 		const player = await Player.findOne({ name: playerName });
-		if (!player) {
-			throw new AppError("Player not found", 404);
-		}
-
 		return player;
 	} catch (error) {
 		throwError(error);
