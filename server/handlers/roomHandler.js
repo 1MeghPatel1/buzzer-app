@@ -274,7 +274,7 @@ const roomHandlers = (io, socket) => {
 		}
 	};
 
-	socket.on("disconnect", onDisconnect);
+	socket.on("room:disconnect", onDisconnect);
 	socket.on("room:buzz", onBuzzRoom);
 	socket.on("room:getDetails", getRoomDetails);
 	socket.on("room:join", joinRoom);

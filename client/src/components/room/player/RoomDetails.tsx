@@ -5,6 +5,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { removeItem } from "@/services/localStorageServices";
 import { appSocket } from "@/socket/socket";
 import useStore from "@/store/store";
 import { LogOut, Volume2, VolumeX } from "lucide-react";
@@ -17,7 +18,8 @@ const RoomDetails = () => {
     toggleSoundOn(soundOn);
   };
   const handleLeaveClick = () => {
-    appSocket.disconnect();
+    appSocket.timeout(5000).emit("room:disconnect");
+    removeItem("playerInfo");
     window.location.reload();
   };
 

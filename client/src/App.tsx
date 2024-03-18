@@ -6,6 +6,18 @@ import Player from "./components/room/player/Player";
 import Host from "./components/room/host/Host";
 import Events from "./socket/Events";
 import { Toaster } from "./components/ui/toaster";
+import { getItem } from "./services/localStorageServices";
+import { appSocket } from "./socket/socket";
+
+const storedPlayerInfo = getItem("playerInfo");
+
+if (storedPlayerInfo) {
+  console.log(storedPlayerInfo);
+  appSocket.timeout(5000).emit("player:refresh", {
+    playerName: storedPlayerInfo.name,
+    roomCode: storedPlayerInfo.roomCode,
+  });
+}
 
 const router = createBrowserRouter([
   {

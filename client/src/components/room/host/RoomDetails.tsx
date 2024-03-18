@@ -18,6 +18,7 @@ import useStore from "@/store/store";
 import { appSocket } from "@/socket/socket";
 import { socketResponse } from "@/utils/types";
 import { useToast } from "@/components/ui/use-toast";
+import { removeItem } from "@/services/localStorageServices";
 const RoomDetails = () => {
   const [isBuzzersLocked, setIsBuzzersLocked] = useState(false);
   const roomState = useStore((state) => state.roomState);
@@ -30,7 +31,8 @@ const RoomDetails = () => {
   };
 
   const handleLeaveClick = () => {
-    appSocket.disconnect();
+    appSocket.timeout(5000).emit("room:disconnect");
+    removeItem("playerInfo");
     window.location.reload();
   };
 
@@ -112,8 +114,8 @@ const RoomDetails = () => {
 
   return (
     <div className="col-start-1 row-start-1 flex min-h-full min-w-[15rem] flex-col justify-around gap-4 rounded-md border border-gray-100 bg-orange-300 bg-opacity-50  bg-clip-padding p-8 shadow-2xl backdrop-blur-sm backdrop-filter dark:bg-gray-300 dark:bg-opacity-30 sm:row-span-1 lg:col-span-2">
-      <div className="flex flex-col items-center gap-5 lg:flex-row lg:gap-10  xl:gap-32">
-        <div className="w-[15rem] lg:w-[18rem]">
+      <div className="flex flex-col items-center gap-5 lg:flex-row lg:gap-10 xl:justify-evenly  xl:gap-12">
+        <div className="min-w-[15rem] lg:w-[18rem]">
           <h2 className="text-2xl font-medium text-slate-700 dark:text-slate-100">
             Room Name
           </h2>
