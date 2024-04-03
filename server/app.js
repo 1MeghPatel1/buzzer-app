@@ -4,6 +4,7 @@ configDotenv();
 import { server } from "./socket/socket.js";
 import connectToDatabase from "./utils/connectToDatabase.js";
 import logger from "./logger/logger.js";
+import clearInactiveRooms from "./cronJobs/clearInactiveRooms.job.js";
 
 connectToDatabase()
 	.then(() => {
@@ -16,3 +17,5 @@ connectToDatabase()
 		console.log(error);
 		process.exit(1);
 	});
+
+clearInactiveRooms();

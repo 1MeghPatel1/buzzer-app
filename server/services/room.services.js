@@ -72,6 +72,19 @@ const findAndJoin = async (roomCode, playerName, socketId) => {
 	}
 };
 
+const findInactiveRooms = async () => {
+	try {
+		const inactiveRooms = await Room.find({
+			updatedAt: {
+				$lt: new Date(Date.now() - 24 * 60 * 60 * 1000),
+			},
+		});
+		return inactiveRooms;
+	} catch (error) {
+		throwError(error);
+	}
+};
+
 const removeByRoomCode = async (roomCode) => {
 	try {
 		const room = await Room.findOneAndDelete({ roomCode });
@@ -218,4 +231,5 @@ export {
 	lockBuzzers,
 	unlockBuzzers,
 	removeBuzzedPlayer,
+	findInactiveRooms,
 };
