@@ -11,7 +11,7 @@ const JoinedPlayers = () => {
         <h3 className="text-lg font-semibold">
           Total Players -{" "}
           <span className="text-lg font-semibold">
-            {roomState.players.length}
+            {roomState.players.length - 1}
           </span>
         </h3>
       </div>
